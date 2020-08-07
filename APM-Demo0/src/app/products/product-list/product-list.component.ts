@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { Product } from '../product';
 import { ProductService } from '../product.service';
 import { Store } from '@ngrx/store';
+import { productReducer } from '../state/product.reducer';
 
 @Component({
   selector: 'pm-product-list',
@@ -33,6 +34,13 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.productService.getProducts().subscribe({
       next: (products: Product[]) => this.products = products,
       error: err => this.errorMessage = err
+    });
+
+    // TODO unsubscribe
+    this.store.select('products').subscribe(products => {
+      if (products) {
+        this.displayCode = products.showProductCode;
+      }
     });
   }
 
