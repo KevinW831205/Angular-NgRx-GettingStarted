@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 
 import { AuthService } from './auth.service';
 import { Store } from '@ngrx/store';
-import { stat } from 'fs';
 
 @Component({
   templateUrl: './login.component.html',
