@@ -1,7 +1,7 @@
 import { createReducer, on, createAction, createFeatureSelector, createSelector } from '@ngrx/store';
 import * as AppState from '../../state/app.state';
 import { User } from '../user';
-import { createSerializationCheckMetaReducer } from '@ngrx/store/src/runtime_checks';
+import * as userActions from './user.actions';
 
 export interface State extends AppState.State {
   user: User;
@@ -31,7 +31,7 @@ export const getCurrentUser = createSelector(
 
 export const userReducer = createReducer(
   initialState,
-  on(createAction('[User] toggle maskName'), (state): UserState => {
+  on(userActions.maskUserName, (state): UserState => {
     return {
       ...state,
       maskUserName: !state.maskUserName
