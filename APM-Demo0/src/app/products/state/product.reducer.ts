@@ -3,6 +3,7 @@ import * as AppState from '../../state/app.state';
 import { Product } from '../product';
 import * as ProductActions from './product.actions';
 import { Action } from 'rxjs/internal/scheduler/Action';
+import { act } from '@ngrx/effects';
 
 export interface State extends AppState.State {
   products: ProductState;
@@ -12,12 +13,14 @@ export interface ProductState {
   showProductCode: boolean;
   currentProduct: Product;
   products: Product[];
+  error: string;
 }
 
 const initialState: ProductState = {
   showProductCode: true,
   currentProduct: null,
-  products: []
+  products: [],
+  error: ''
 }
 
 const getProductFeatureState = createFeatureSelector<ProductState>('products');
@@ -36,6 +39,11 @@ export const getProductsState = createSelector(
   getProductFeatureState,
   state => state.products
 );
+
+export const getError = createSelector(
+  getProductFeatureState,
+  state => state.error
+)
 
 export const productReducer = createReducer<ProductState>(
   initialState,
@@ -72,7 +80,15 @@ export const productReducer = createReducer<ProductState>(
   on(ProductActions.loadProductSuccess, (state, action): ProductState => {
     return {
       ...state,
-      products: action.products
+      products: action.products,
+      error: ''
+    }
+  }),
+  on(ProductActions.loadProductFail, (state, action): ProductState => {
+    return {
+      ...state,
+      products: [],
+      error: action.error
     }
   })
 );

@@ -16,10 +16,10 @@ export const loadProduct = createAction('[Product] Load Product');
 
 export const loadProductSuccess = createAction(
     '[Product] Load Product Success',
-    props<{ products: Product[]}>()
+    props<{ products: Product[] }>()
 );
 
 export const loadProductFail = createAction(
     '[Product] Load Product Fail',
-    props<{ error: String }>()
+    props<{ error: string }>()
 );
