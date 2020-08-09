@@ -3,7 +3,7 @@ import * as AppState from '../../state/app.state';
 import { Product } from '../product';
 import * as ProductActions from './product.actions';
 import { Action } from 'rxjs/internal/scheduler/Action';
-import { act } from '@ngrx/effects';
+import { act, createEffect } from '@ngrx/effects';
 
 export interface State extends AppState.State {
   products: ProductState;
@@ -11,14 +11,14 @@ export interface State extends AppState.State {
 
 export interface ProductState {
   showProductCode: boolean;
-  currentProduct: Product;
+  currentProductId: number | null;
   products: Product[];
   error: string;
 }
 
 const initialState: ProductState = {
   showProductCode: true,
-  currentProduct: null,
+  currentProductId: null,
   products: [],
   error: ''
 }
@@ -30,9 +30,27 @@ export const getShowProductCode = createSelector(
   state => state.showProductCode
 );
 
+export const getCurrentProductIdState = createSelector(
+  getProductFeatureState,
+  state => state.currentProductId
+)
+
 export const getCurrentProductState = createSelector(
   getProductFeatureState,
-  state => state.currentProduct
+  getCurrentProductIdState,
+  (state, currentProductId) => {
+    if (currentProductId === 0){
+      return  {
+        id: 0,
+        productName: '',
+        productCode: 'new',
+        description: '',
+        starRating: 0
+      };
+    } else {
+      return currentProductId ? state.products.find(p => p.id === currentProductId) : null;
+    }
+  }
 );
 
 export const getProductsState = createSelector(
@@ -56,25 +74,19 @@ export const productReducer = createReducer<ProductState>(
   on(ProductActions.setCurrentProduct, (state, action): ProductState => {
     return {
       ... state,
-      currentProduct: action.product
+      currentProductId: action.currentProductId
     };
   }),
   on(ProductActions.initCurrentProduct, (state): ProductState => {
     return {
       ...state,
-      currentProduct: {
-        id: 0,
-        productName: '',
-        productCode: 'new',
-        description: '',
-        starRating: 0
-      }
+      currentProductId: 0
     }
   }),
   on(ProductActions.clearCurrentProduct, (state): ProductState =>{
     return {
       ...state,
-      currentProduct: null
+      currentProductId: null
     }
   }),
   on(ProductActions.loadProductSuccess, (state, action): ProductState => {

@@ -84,8 +84,6 @@ export class ProductEditComponent implements OnInit {
 
   displayProduct(product: Product | null): void {
     // Set the local product property
-    this.product = product;
-
     if (product) {
       // Reset the form back to pristine
       this.productForm.reset();
@@ -137,12 +135,12 @@ export class ProductEditComponent implements OnInit {
 
         if (product.id === 0) {
           this.productService.createProduct(product).subscribe({
-            next: p => this.store.dispatch(ProductActions.setCurrentProduct({ product: p })),
+            next: p => this.store.dispatch(ProductActions.setCurrentProduct({ currentProductId: p.id })),
             error: err => this.errorMessage = err
           });
         } else {
           this.productService.updateProduct(product).subscribe({
-            next: p => this.store.dispatch(ProductActions.setCurrentProduct({ product: p })),
+            next: p => this.store.dispatch(ProductActions.setCurrentProduct({ currentProductId: p.id })),
             error: err => this.errorMessage = err
           });
         }
