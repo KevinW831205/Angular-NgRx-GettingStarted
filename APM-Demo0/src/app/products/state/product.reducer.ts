@@ -117,5 +117,35 @@ export const productReducer = createReducer<ProductState>(
       ...state,
       error: action.error
     }
-  })  
+  }),  
+  on(ProductActions.createProductSuccess, (state, action): ProductState => {
+    const newProductList = state.products.concat(action.product);
+    return {
+      ...state,
+      products: newProductList,
+      currentProductId: action.product.id,
+      error: ''
+    }
+  }),
+  on(ProductActions.createProductFail, (state, action): ProductState => {
+    return {
+      ...state,
+      error: action.error
+    }
+  }),
+  on(ProductActions.deleteProductSuccess, (state, action): ProductState => {
+    const newProductList = state.products.filter(product => product.id !== action.productId);
+    return {
+      ...state,
+      products: newProductList,
+      currentProductId: action.productId,
+      error: ''
+    }
+  }),
+  on(ProductActions.deleteProductFail, (state, action): ProductState => {
+    return {
+      ...state,
+      error: action.error
+    }
+  })
 );
