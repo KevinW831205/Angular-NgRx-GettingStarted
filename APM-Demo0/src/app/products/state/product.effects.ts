@@ -2,27 +2,37 @@ import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { ProductService } from 'src/app/products/product.service';
 import * as ProductActions from './product.actions'
-import { mergeMap, map, catchError } from 'rxjs/operators';
+import { mergeMap, map, catchError, concatMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 @Injectable()
 export class ProductEffects {
 
-    constructor(private actions$: Actions,
-        private productService: ProductService){}
+  constructor(private actions$: Actions,
+    private productService: ProductService) { }
 
 
-    // switch map -> cause race conditions, use on cancelable requests
-    // concat map -> guarantees order
-    // merge map -> runs in parallel but doesn't guarantee order
-    // exhaustMap -> ignores all subsequent subscriptions until is complete, use in login
-    loadProducts$ = createEffect(() => {
-        return this.actions$.pipe(
-            ofType(ProductActions.loadProduct),
-            mergeMap(() => this.productService.getProducts().pipe(
-                map(products => ProductActions.loadProductSuccess({ products: products})),
-                catchError(error => of(ProductActions.loadProductFail({ error: error})))
-            ))
-        )
-    })
+  // switch map -> cause race conditions, use on cancelable requests
+  // concat map -> guarantees order
+  // merge map -> runs in parallel but doesn't guarantee order
+  // exhaustMap -> ignores all subsequent subscriptions until is complete, use in login
+  loadProducts$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ProductActions.loadProduct),
+      mergeMap(() => this.productService.getProducts().pipe(
+        map(products => ProductActions.loadProductSuccess({ products: products })),
+        catchError(error => of(ProductActions.loadProductFail({ error: error })))
+      ))
+    )
+  })
+
+  updateProducts$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ProductActions.updateProduct),
+      concatMap(action => this.productService.updateProduct(action.product).pipe(
+        map(product => ProductActions.updateProductSuccess({ product: product })),
+        catchError(error => of(ProductActions.updateProductFail({ error })))
+      ))
+    )
+  })
 }
